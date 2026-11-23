@@ -7,7 +7,7 @@ const JobListing = ({job}) => {
     const [showFullDescription, setFullDescription] = useState(false)
     let description = job.description
     if (!showFullDescription) {
-        description = description.substring(0, 90) + "..."
+        description = job.description.substring(0, 90) + "..."
     }
   return (
         <div className="bg-white rounded-xl shadow-md relative">
@@ -23,6 +23,7 @@ const JobListing = ({job}) => {
 
                 <button onClick={() => setFullDescription((prevState) => !prevState)} className='text-indigo-500 mb-5 hover:text-indigo-600'>
                     {showFullDescription ? 'Menos' : 'Mas'}
+
                 </button>
 
                 <h3 className="text-indigo-500 mb-2">{job.salary}</h3>
@@ -35,7 +36,7 @@ const JobListing = ({job}) => {
                         {job.location}
                     </div>
                     <Link 
-                    to="job" 
+                    to={`/jobs/${job.id}`} 
                     className="h-[36px] bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-center text-sm">
                         Read More
                     </Link>
