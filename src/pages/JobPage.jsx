@@ -1,21 +1,38 @@
-import {useParams , useLoaderData} from 'react-router'
-import {FaArrowLeft } from 'react-icons/fa'
+import { useParams, useLoaderData } from "react-router"
+import { FaArrowLeft} from "react-icons/fa"
 import { HiLocationMarker } from 'react-icons/hi'
-import {Link} from 'react-router'
+import { Link } from "react-router"
+import { useNavigate } from "react-router"
+import { toast } from "react-toastify"
 
-const JobPage = () => {
-  const {id} = useParams()
-const job = useLoaderData()
+const JobPage = ({deleteJob}) => {
+    const {id} = useParams()
+    const job = useLoaderData()
+    const navigate = useNavigate()
 
-    return (
-        <> 
-         <section>
-      <div classNameName="container m-auto py-6 px-6">
+    const handleDelete = (jobId) => {
+      const confirmed = window.confirm(
+        'esta seguro que desea borrar este empleo?'
+      );
+
+      if (!confirmed) return
+
+      deleteJob(jobId)
+
+      toast.success('Empleo eliminado correctamente')
+
+      navigate("/jobs")
+    }
+
+  return (
+    <>  
+    <section>
+      <div className="container m-auto py-6 px-6">
         <Link
-          to= "/jobs"
+          to="/jobs"
           className="text-indigo-500 hover:text-indigo-600 flex items-center"
         >
-         <FaArrowLeft className="mr-2" /> Back to Job Listings
+        <FaArrowLeft className="mr-2"/> Back to Job Listings
         </Link>
       </div>
     </section>
@@ -27,15 +44,15 @@ const job = useLoaderData()
             <div
               className="bg-white p-6 rounded-lg shadow-md text-center md:text-left"
             >
-              <div className="text-gray-500 mb-4"> { job.type } </div>
+              <div className="text-gray-500 mb-4">{job.type}</div>
               <h1 className="text-3xl font-bold mb-4">
-                { job.title }
+                {job.title}
               </h1>
               <div
-                className="text-orange-700 mb-4 flex align-middle justify-center md:justify-start"
+                className="text-organe-700 mb-4 flex align-middle justify-center md:justify-start"
               >
-              < HiLocationMarker className="text-orange-700 mr-1 "/>
-                <p className="text-orange-700">{job.location }</p>
+                <HiLocationMarker className="text-orange-700 mr-1"/>
+                <p className="text-orange-700">{job.location}</p>
               </div>
             </div>
 
@@ -45,23 +62,24 @@ const job = useLoaderData()
               </h3>
 
               <p className="mb-4">
-                { job.description }
+                {job.description}
               </p>
 
               <h3 className="text-indigo-800 text-lg font-bold mb-2">Salary</h3>
 
-              <p className="mb-4">${job.salary}</p>
+              <p className="mb-4">{job.salary}</p>
             </div>
           </main>
 
           <aside>
+
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-bold mb-6">Company Info</h3>
 
-              <h2 className="text-2xl">NewTek Solutions</h2>
+              <h2 className="text-2xl">{job.company.name}</h2>
 
               <p className="my-2">
-                NewTek Solutions is a leading technology company specializing in web development and digital solutions. We pride ourselves on delivering high-quality products and services to our clients while fostering a collaborative and innovative work environment.
+                {job.company.description}
               </p>
 
               <hr className="my-4" />
@@ -69,24 +87,24 @@ const job = useLoaderData()
               <h3 className="text-xl">Contact Email:</h3>
 
               <p className="my-2 bg-indigo-100 p-2 font-bold">
-                contact@newteksolutions.com
+                {job.company.contactEmail}
               </p>
 
               <h3 className="text-xl">Contact Phone:</h3>
 
-              <p className="my-2 bg-indigo-100 p-2 font-bold">555-555-5555</p>
+              <p className="my-2 bg-indigo-100 p-2 font-bold">{job.company.contactPhone}</p>
             </div>
 
+            
             <div className="bg-white p-6 rounded-lg shadow-md mt-6">
               <h3 className="text-xl font-bold mb-6">Manage Job</h3>
-              <a
-                href="add-job.html"
+              <Link
+                to={`/edit-job/${job.id}`}
                 className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-                >Edit Job</a
-              >
-              <button
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
-              >
+                >Edit Job</Link>
+
+              <button onClick={ () => handleDelete(job.id)}
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block">
                 Delete Job
               </button>
             </div>
@@ -94,14 +112,14 @@ const job = useLoaderData()
         </div>
       </div>
     </section>
-        </>
-    )
+    </>
+  )
 }
 
-const jobloader = async ({ params }) => {
-    const res = await fetch ('/api/jobs/${params.id}')
+const jobLoader = async ({ params }) => {
+    const res = await fetch (`/api/jobs/${params.id}`)
     const data = await res.json()
     return data
 }
 
-export { JobPage as default, jobloader }
+export {JobPage as default, jobLoader}
